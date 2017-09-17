@@ -3,6 +3,7 @@
 /// C00220868
 /// Missile Text Based Game
 /// Select warhead, Acquire target, Launch code, Arm Missile, Collison ? Valid ? 
+/// Known Bugs: if user enters too many digits it breaks the whole thing.
 /// </summary>
 #include <iostream>
 #include <Windows.h>
@@ -13,71 +14,24 @@ enum Screen {
 	Main,
 	Select,
 	Intel,
-	Launch
+	Launch,
+	Aftermath,
+	Reset
 };
-typedef struct Position
-{
-	int x;
-	int y;
-	void print()
-	{
-		std::cout << x << y << std::endl;
-	}
-}Coordinates;
 
-enum WarHead { EXPLOSIVE, NUCLEAR };
+enum WarHead { EXPLOSIVE, NUCLEAR, SAFETY };
 
-typedef struct Enemy {
-	Coordinates coordinates;
-}Target;
-
-struct Missile {
-	WarHead payload;
-	Coordinates coordinates;
-	Target target;
-
-
-	bool isArmed = false;
-
-	void arm(int type)
-	{
-		if (isArmed)
-		{
-			isArmed = false;
-		}
-		else
-		{
-			isArmed = true;
-		}
-		if (type == 1)
-		{
-			payload = EXPLOSIVE;
-		}
-		else
-		{
-			payload = NUCLEAR;
-		}
-	}
-	void update()
-	{
-		if (payload == EXPLOSIVE)
-		{
-			//40 % chance of success
-		}
-		else
-		{
-			//if (civ < 80km) Fail
-			//else 100% success
-		}
-	}
-};
 struct Game {
-	Missile missile;
+	WarHead payload;
 	Screen currScr;
-	int choice = 0;
-	int intel = 20;
+	long choice = 0;
+	int intel = 5;
 	int counter = 0;
 	int civDistance = 0;
+	bool intelValid = true;
+	bool gameOver = false;
+	bool isArmed = false;
+	bool launched = false;
 
 	void run()
 	{
@@ -87,9 +41,9 @@ struct Game {
 
 		DWORD nextGameTick = GetTickCount(); //returns current no. of ms elapsed since system started.
 		int sleepTime = 0;
-		bool gameOver = false;
-		
-		mainScr();
+
+		std::cout << "Welcome to Missile, Intel, Terrorist Attack Game!" << std::endl;
+		currScr = Main;
 		while (!gameOver)
 		{
 			update();
@@ -121,83 +75,200 @@ struct Game {
 			currScr = Launch;
 			break;
 		case 4:
-			system("exit");
+			gameOver = true;
+			break;
 		default:
+			std::cout << "Please Enter a Valid Entry!" << std::endl;
+			std::cout << std::endl;
+			system("pause");
 			break;
 		}
+
 	}
 	void selectScr()
 	{
-		std::cout << "1. Explosive (0.5km explosion radius, 40% accuracy)" << std::endl;
-		std::cout << "2. Nuclear (80km explosion radius, 100% accuracy)" << std::endl;
+		std::cout << "1. Explosive (<1km explosion radius, 30 % accuracy)" << std::endl;
+		std::cout << "2. Nuclear   (80km explosion radius, 100% accuracy)" << std::endl;
 		std::cin >> choice;
-		missile.arm(choice);
 		switch (choice)
 		{
 		case 1:
-			std::cout << "You have armed the Explosive warhead!" <<std::endl;
+			std::cout << "You have armed the Explosive warhead!" << std::endl;
+			payload = EXPLOSIVE;
 			break;
 		case 2:
 			std::cout << "You have armed the Nuclear warhead!" << std::endl;
+			payload = NUCLEAR;
 			break;
 		default:
+			std::cout << "Please Enter a Valid Entry!" << std::endl;
+			std::cout << std::endl;
+			system("pause");
 			break;
 		}
+		isArmed = true;
+		std::cout << std::endl;
+		system("pause");
 		currScr = Main;
 	}
 	void intelScr()
 	{
-
-		std::cout << "New Intel incoming.";
-		for (int i = 0; i < 3; i++)
+		if (intelValid)
 		{
-			Sleep(1000);
-			std::cout << ".";
-			Sleep(500);
-		}
-		std::cout << std::endl;
-		std::cout << "Hostiles discovered at x,y." << std::endl;
-		std::cout << "Locking on.";
-		for (int i = 0; i < 3; i++)
-		{
-			Sleep(1000);
-			std::cout << ".";
-			Sleep(500);
-		}
-		std::cout << std::endl << "Target locked on." << std::endl;
-		civDistance = rand() % 400 + 1;
-		std::cout << "Be aware! Civilians within " << civDistance << "km of target." << std::endl;
-		system("pause");
-		currScr = Main;
-
-	}
-	void launchScr()
-	{
-		if (missile.isArmed)
-		{
-			std::cout << "Launch Code: ****\nLaunching Missile!" << std::endl;
+			std::cout << "Current Intel: Hostiles in the area; Civilians within " << civDistance << "km of hostiles." << std::endl;
 		}
 		else
 		{
-			std::cout << "Please select, and arm, a War Head first" << std::endl;
-			system("pause");
+			std::cout << "New Intel incoming";
+			for (int i = 0; i < 3; i++)
+			{
+				Sleep(1000);
+				std::cout << ".";
+				Sleep(250);
+			}
+			std::cout << std::endl;
+			std::cout << "Hostiles discovered in the area." << std::endl;
+			Sleep(250);
+			std::cout << "Locking on now";
+			for (int i = 0; i < 3; i++)
+			{
+				Sleep(1000);
+				std::cout << ".";
+				Sleep(250);
+			}
+			std::cout << std::endl << "Target locked on." << std::endl;
+			Sleep(500);
+			civDistance = rand() % 400 + 1;
+			std::cout << std::endl << "Be aware! Civilians within " << civDistance << "km of target." << std::endl;
+			intelValid = true;
+			intel = 5;
+		}
+		std::cout << std::endl;
+		system("pause");
+		currScr = Main;
+	}
+	void launchScr()
+	{
+		if (intelValid)
+		{
+			if (isArmed)
+			{
+				std::cout << "Launch Code: ";
+				for (int i = 0; i < 4; i++)
+				{
+					Sleep(1000);
+					std::cout << "*";
+					Sleep(250);
+				}
+				std::cout << std::endl << "Launching Missile!" << std::endl;
+				launched = true;
+				currScr = Aftermath;
+			}
+			else
+			{
+				std::cout << "Please select, and arm, a War Head first" << std::endl;
+				currScr = Main;
+			}
+		}
+		else
+		{
+			std::cout << "Currently attempting to fire blind.. Please aquire valid intel before lauching death tubes.." << std::endl;
 			currScr = Main;
+		}
+		std::cout << std::endl;
+		system("pause");
+
+	}
+	void afterScr()
+	{
+		if (payload == EXPLOSIVE)
+		{
+			int temp = rand() % 10 + 1;
+			if (temp < 4)
+			{
+				std::cout << "Direct Hit! And you avoided all civilian casualties, GREAT job!" << std::endl;
+				std::cout << std::endl;
+				system("pause");
+				currScr = Reset;
+			}
+			else
+			{
+				isArmed = false;
+				launched = false;
+				payload = SAFETY;
+				std::cout << "Current Intel Valid for " << intel << " minutes! So act fast!" << std::endl << std::endl;
+				std::cout << "Near Miss! Load up another warhead if you want to try again!" << std::endl;
+				std::cout << std::endl;
+				system("pause"); 
+				currScr = Main;
+			}
+		}
+		else
+		{
+			if (civDistance > 80)
+			{
+				std::cout << "Direct Hit! And you avoided all civilian casualties, GREAT job!" << std::endl;
+			}
+			else
+			{
+				std::cout << "Did you NOT read the Intel?! You anihalted the target AND all of the nearby civilians, you Monster!" << std::endl;
+			}
+			std::cout << std::endl;
+			system("pause");
+			currScr = Reset;
+		}
+	}
+	void reset()
+	{
+		std::cout << "1: Play again" << std::endl;
+		std::cout << "2: Quit" << std::endl;
+		std::cin >> choice;
+		if (choice == 1)
+		{
+			choice = 0;
+			intel = 5;
+			counter = 0;
+			civDistance = 0;
+			intelValid = false;
+			isArmed = false;
+			launched = false;
+			payload = SAFETY;
+			currScr = Main;
+		}
+		else if (choice == 2)
+		{
+			gameOver = true;
+		}
+		else
+		{
+			std::cout << "Please Enter a Valid Entry!" << std::endl;
+			std::cout << std::endl;
+			system("pause");
 		}
 	}
 	void update()
 	{
-		counter++;
-		if (counter == 60)
+		if (intelValid)
 		{
-			intel--;
-			counter = 0;
+			counter++;
+			if (counter == 2)
+			{
+				intel--;
+				counter = 0;
+			}
 		}
-		missile.update();
+		if (intel == 0)
+		{
+			intelValid = false;
+		}
 	}
 	void print()
 	{
 		system("CLS");
-		//std::cout << "Current Intel Valid for " << intel << std::endl;
+		if (intelValid && !launched)
+		{
+			std::cout << "Current Intel Valid for " << intel << " minutes! So act fast!" << std::endl << std::endl;
+		}
 		if (currScr == Main)
 		{
 			mainScr();
@@ -213,6 +284,14 @@ struct Game {
 		else if (currScr == Launch )
 		{
 			launchScr();
+		}
+		else if (currScr == Aftermath)
+		{
+			afterScr();
+		}
+		else if (currScr == Reset)
+		{
+			reset();
 		}
 	}
 };
