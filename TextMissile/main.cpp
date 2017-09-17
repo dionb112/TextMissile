@@ -7,7 +7,14 @@
 #include <iostream>
 #include <Windows.h>
 #include <time.h>
+#include <stdlib.h>
 
+enum Screen {
+	Main,
+	Select,
+	Intel,
+	Launch
+};
 typedef struct Position
 {
 	int x;
@@ -32,7 +39,7 @@ struct Missile {
 
 	bool isArmed = false;
 
-	void arm()
+	void arm(int type)
 	{
 		if (isArmed)
 		{
@@ -42,32 +49,51 @@ struct Missile {
 		{
 			isArmed = true;
 		}
+		if (type == 1)
+		{
+			payload = EXPLOSIVE;
+		}
+		else
+		{
+			payload = NUCLEAR;
+		}
 	}
 	void update()
 	{
-		coordinates.x += 1;
-		coordinates.y += 1;
+		if (payload == EXPLOSIVE)
+		{
+			//40 % chance of success
+		}
+		else
+		{
+			//if (civ < 80km) Fail
+			//else 100% success
+		}
 	}
 };
 struct Game {
 	Missile missile;
+	Screen currScr;
 	int choice = 0;
-	int intelCounter = 20;
-	int i = 0;
+	int intel = 20;
+	int counter = 0;
+	int civDistance = 0;
 
 	void run()
 	{
 		///deWiTTERS Game Loop helped immensly here, I was trying to do it with clock_t etc. and it was updating way too frequently.
-		const int TICKS_PER_SECOND = 60;
-		const int SKIP_TICKS = 1000 / TICKS_PER_SECOND;
+		const int FRAMES_PER_SECOND = 60;
+		const int SKIP_TICKS = 1000 / FRAMES_PER_SECOND;
 
 		DWORD nextGameTick = GetTickCount(); //returns current no. of ms elapsed since system started.
 		int sleepTime = 0;
 		bool gameOver = false;
 		
+		mainScr();
 		while (!gameOver)
 		{
 			update();
+			print();
 			nextGameTick += SKIP_TICKS;
 			sleepTime = nextGameTick - GetTickCount();
 			if (sleepTime >= 0)
@@ -83,17 +109,16 @@ struct Game {
 		std::cout << "3. Launch Missile" << std::endl;
 		std::cout << "4. Quit" << std::endl;
 		std::cin >> choice;
-		system("CLS");
 		switch (choice)
 		{
 		case 1:
-			selectScr();
+			currScr = Select;
 			break;
 		case 2:
-			intelScr();
+			currScr = Intel;
 			break;
 		case 3:
-			launchScr();
+			currScr = Launch;
 			break;
 		case 4:
 			system("exit");
@@ -103,30 +128,48 @@ struct Game {
 	}
 	void selectScr()
 	{
-		std::cout << "1. Explosive" << std::endl;
-		std::cout << "2. Nuclear" << std::endl;
+		std::cout << "1. Explosive (0.5km explosion radius, 40% accuracy)" << std::endl;
+		std::cout << "2. Nuclear (80km explosion radius, 100% accuracy)" << std::endl;
 		std::cin >> choice;
-		missile.arm();
-		system("CLS");
+		missile.arm(choice);
 		switch (choice)
 		{
 		case 1:
-			explosive();
+			std::cout << "You have armed the Explosive warhead!" <<std::endl;
 			break;
 		case 2:
-			nuclear();
+			std::cout << "You have armed the Nuclear warhead!" << std::endl;
 			break;
 		default:
 			break;
 		}
-		mainScr();
+		currScr = Main;
 	}
 	void intelScr()
 	{
 
-		std::cout << "Current Intel will be valid for: " <<intelCounter << " seconds." << std::endl;
-		
-		//doing cmd window timer here for intel
+		std::cout << "New Intel incoming.";
+		for (int i = 0; i < 3; i++)
+		{
+			Sleep(1000);
+			std::cout << ".";
+			Sleep(500);
+		}
+		std::cout << std::endl;
+		std::cout << "Hostiles discovered at x,y." << std::endl;
+		std::cout << "Locking on.";
+		for (int i = 0; i < 3; i++)
+		{
+			Sleep(1000);
+			std::cout << ".";
+			Sleep(500);
+		}
+		std::cout << std::endl << "Target locked on." << std::endl;
+		civDistance = rand() % 400 + 1;
+		std::cout << "Be aware! Civilians within " << civDistance << "km of target." << std::endl;
+		system("pause");
+		currScr = Main;
+
 	}
 	void launchScr()
 	{
@@ -138,29 +181,39 @@ struct Game {
 		{
 			std::cout << "Please select, and arm, a War Head first" << std::endl;
 			system("pause");
-			system("CLS");
-			mainScr();
+			currScr = Main;
 		}
-	}
-	void explosive()
-	{
-	}
-	void nuclear()
-	{
 	}
 	void update()
 	{
-		//if (intelCounter > 0)
-		//{
-		//	Sleep(1000);
-		//	intelCounter--;
-		//}
-		//else
-		//{
-		//	intelCounter = 20;
-		//}
-		std::cout << i << std::endl;
-		i++;
+		counter++;
+		if (counter == 60)
+		{
+			intel--;
+			counter = 0;
+		}
+		missile.update();
+	}
+	void print()
+	{
+		system("CLS");
+		//std::cout << "Current Intel Valid for " << intel << std::endl;
+		if (currScr == Main)
+		{
+			mainScr();
+		}
+		else if (currScr == Select)
+		{
+			selectScr();
+		}
+		else if (currScr == Intel )
+		{
+			intelScr();
+		}
+		else if (currScr == Launch )
+		{
+			launchScr();
+		}
 	}
 };
 int main()
