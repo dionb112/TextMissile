@@ -53,6 +53,29 @@ struct Game {
 	Missile missile;
 	int choice = 0;
 	int intelCounter = 20;
+	int i = 0;
+
+	void run()
+	{
+		///deWiTTERS Game Loop helped immensly here, I was trying to do it with clock_t etc. and it was updating way too frequently.
+		const int TICKS_PER_SECOND = 60;
+		const int SKIP_TICKS = 1000 / TICKS_PER_SECOND;
+
+		DWORD nextGameTick = GetTickCount(); //returns current no. of ms elapsed since system started.
+		int sleepTime = 0;
+		bool gameOver = false;
+		
+		while (!gameOver)
+		{
+			update();
+			nextGameTick += SKIP_TICKS;
+			sleepTime = nextGameTick - GetTickCount();
+			if (sleepTime >= 0)
+			{
+				Sleep(sleepTime);
+			}
+		}
+	}
 	void mainScr()
 	{
 		std::cout << "1. Select War Head" << std::endl;
@@ -127,23 +150,23 @@ struct Game {
 	}
 	void update()
 	{
-		if (intelCounter > 0)
-		{
-			Sleep(1000);
-			intelCounter--;
-		}
-		else
-		{
-			intelCounter = 20;
-		}
+		//if (intelCounter > 0)
+		//{
+		//	Sleep(1000);
+		//	intelCounter--;
+		//}
+		//else
+		//{
+		//	intelCounter = 20;
+		//}
+		std::cout << i << std::endl;
+		i++;
 	}
 };
 int main()
 {
-	clock_t time;
-	time = clock();
 	Game game;
-	game.mainScr();
+	game.run();
 	return 1;
 }
 
