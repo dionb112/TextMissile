@@ -3,12 +3,14 @@
 /// C00220868
 /// Missile Text Based Game
 /// Select warhead, Acquire target, Launch code, Arm Missile, Collison ? Valid ? 
-/// Known Bugs: if user enters too many digits it breaks the whole thing.
+/// Known Bugs: Need to learn about threading so I can keep the clock updating while system is paused.
 /// </summary>
 #include <iostream>
 #include <Windows.h>
 #include <time.h>
 #include <stdlib.h>
+#include <sstream>
+#include <string.h>
 
 enum Screen {
 	Main,
@@ -24,11 +26,12 @@ enum WarHead { EXPLOSIVE, NUCLEAR, SAFETY };
 struct Game {
 	WarHead payload;
 	Screen currScr;
-	long choice = 0;
+	std::string input;
+	int choice = 0;
 	int intel = 5;
 	int counter = 0;
 	int civDistance = 0;
-	bool intelValid = true;
+	bool intelValid = false;
 	bool gameOver = false;
 	bool isArmed = false;
 	bool launched = false;
@@ -43,6 +46,8 @@ struct Game {
 		int sleepTime = 0;
 
 		std::cout << "Welcome to Missile, Intel, Terrorist Attack Game!" << std::endl;
+		std::cout << std::endl;
+		system("pause"); 
 		currScr = Main;
 		while (!gameOver)
 		{
@@ -56,13 +61,24 @@ struct Game {
 			}
 		}
 	}
+	void userInput()
+	{
+		while (!false)
+		{
+			std::getline(std::cin, input);
+			std::stringstream myStream(input);
+			if (myStream >> choice)
+				break;
+			std::cout << "Invalid entry, please try again" << std::endl;
+		}
+	}
 	void mainScr()
 	{
 		std::cout << "1. Select War Head" << std::endl;
 		std::cout << "2. Check Intel" << std::endl;
 		std::cout << "3. Launch Missile" << std::endl;
 		std::cout << "4. Quit" << std::endl;
-		std::cin >> choice;
+		userInput();
 		switch (choice)
 		{
 		case 1:
@@ -78,7 +94,7 @@ struct Game {
 			gameOver = true;
 			break;
 		default:
-			std::cout << "Please Enter a Valid Entry!" << std::endl;
+			std::cout << "You have four choices.. choose one!" << std::endl;
 			std::cout << std::endl;
 			system("pause");
 			break;
@@ -87,9 +103,9 @@ struct Game {
 	}
 	void selectScr()
 	{
-		std::cout << "1. Explosive (<1km explosion radius, 30 % accuracy)" << std::endl;
+		std::cout << "1. Explosive (<1km explosion radius, 40 % accuracy)" << std::endl;
 		std::cout << "2. Nuclear   (80km explosion radius, 100% accuracy)" << std::endl;
-		std::cin >> choice;
+		userInput();
 		switch (choice)
 		{
 		case 1:
@@ -101,7 +117,7 @@ struct Game {
 			payload = NUCLEAR;
 			break;
 		default:
-			std::cout << "Please Enter a Valid Entry!" << std::endl;
+			std::cout << "There is only two warheads to chose from, it really couldn't be much more simple." << std::endl;
 			std::cout << std::endl;
 			system("pause");
 			break;
@@ -184,7 +200,7 @@ struct Game {
 		if (payload == EXPLOSIVE)
 		{
 			int temp = rand() % 10 + 1;
-			if (temp < 4)
+			if (temp < 5)
 			{
 				std::cout << "Direct Hit! And you avoided all civilian casualties, GREAT job!" << std::endl;
 				std::cout << std::endl;
@@ -211,7 +227,7 @@ struct Game {
 			}
 			else
 			{
-				std::cout << "Did you NOT read the Intel?! You anihalted the target AND all of the nearby civilians, you Monster!" << std::endl;
+				std::cout << "Did you NOT read the Intel?!\nYou anihalted the target AND all of the nearby civilians, you Monster!" << std::endl;
 			}
 			std::cout << std::endl;
 			system("pause");
@@ -222,7 +238,7 @@ struct Game {
 	{
 		std::cout << "1: Play again" << std::endl;
 		std::cout << "2: Quit" << std::endl;
-		std::cin >> choice;
+		userInput();
 		if (choice == 1)
 		{
 			choice = 0;
@@ -241,7 +257,7 @@ struct Game {
 		}
 		else
 		{
-			std::cout << "Please Enter a Valid Entry!" << std::endl;
+			std::cout << "If you're not going to play along at this point just close the window." << std::endl;
 			std::cout << std::endl;
 			system("pause");
 		}
