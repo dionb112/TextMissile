@@ -48,6 +48,7 @@ struct Game {
 		std::cout << "Welcome to Missile, Intel, Terrorist Attack Game!" << std::endl;
 		std::cout << std::endl;
 		system("pause"); 
+
 		currScr = Main;
 		while (!gameOver)
 		{
@@ -313,6 +314,7 @@ struct Game {
 };
 int main()
 {
+	srand(time(NULL));
 	Game game;
 	game.run();
 	return 1;
