@@ -4,7 +4,7 @@
 /// Missile Text Based Game
 /// Select warhead, Acquire target, Launch code, Arm Missile, Collison ? Valid ? 
 /// Known Bugs: Need to learn about threading so I can keep the clock updating while system is paused.
-///Time taken: Average 5 - 20 hours ?
+/// Time taken: Average 5 - 20 hours ?
 /// </summary>
 #include <iostream>
 #include <Windows.h>
@@ -21,17 +21,42 @@ enum Screen {
 	AFTERMATH,
 	RESET
 };
+typedef struct Position
+{
+	int x;
+	int y;
+	void print()
+	{
+		std::cout << x << "North, " << y <<"East."<< std::endl;
+	}
+	void setTarget()
+	{
+		x = rand() % 400 + 1;
+		y = rand() % 400 + 1;
+	}
+}Coordinates;
+
+typedef struct Enemy {
+	Coordinates coordinates; //enemy pos
+}Target;
 
 enum WarHead { EXPLOSIVE, NUCLEAR, SAFETY };
+
+struct Missile {
+	Coordinates coordinates; //missile pos
+	Target target; //missiles attempted target (enemies)
+};
 
 struct Game {
 	WarHead payload;
 	Screen currScr;
+	Missile missile;
 	std::string input;
 	int choice = 0;
 	int intel = 5;
 	int counter = 0;
 	int civDistance = 0;
+	int launchCode = 0000;
 	bool intelValid = false;
 	bool gameOver = false;
 	bool isArmed = false;
@@ -77,7 +102,7 @@ struct Game {
 	void mainScr()
 	{
 		std::cout << "1. Select War Head" << std::endl;
-		std::cout << "2. Check Intel" << std::endl;
+		std::cout << "2. Acquire Target" << std::endl;
 		std::cout << "3. Launch Missile" << std::endl;
 		std::cout << "4. Quit" << std::endl;
 		userInput();
@@ -133,7 +158,8 @@ struct Game {
 	{
 		if (intelValid)
 		{
-			std::cout << "Current Intel: Hostiles in the area; Civilians within " << civDistance << "km of hostiles." << std::endl;
+			std::cout << "Current Intel - Launch Code: " << launchCode << "; Civilians within " << civDistance << "km of hostiles;" << " Hostiles at gps coordinates: ";
+			missile.target.coordinates.print(); 
 		}
 		else
 		{
@@ -144,8 +170,10 @@ struct Game {
 				std::cout << ".";
 				Sleep(250);
 			}
-			std::cout << std::endl;
-			std::cout << "Hostiles discovered in the area." << std::endl;
+
+			missile.target.coordinates.setTarget();
+			std::cout << "\nHostiles discovered at gps coordinates: ";
+			missile.target.coordinates.print();
 			Sleep(250);
 			std::cout << "Locking on now";
 			for (int i = 0; i < 3; i++)
@@ -154,6 +182,8 @@ struct Game {
 				std::cout << ".";
 				Sleep(250);
 			}
+
+
 			std::cout << std::endl << "Target locked on." << std::endl;
 			Sleep(500);
 			civDistance = rand() % 400 + 1;
