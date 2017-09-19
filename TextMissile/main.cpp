@@ -4,6 +4,7 @@
 /// Missile Text Based Game
 /// Select warhead, Acquire target, Launch code, Arm Missile, Collison ? Valid ? 
 /// Known Bugs: Need to learn about threading so I can keep the clock updating while system is paused.
+///Time taken: Average 5 - 20 hours ?
 /// </summary>
 #include <iostream>
 #include <Windows.h>
@@ -13,12 +14,12 @@
 #include <string.h>
 
 enum Screen {
-	Main,
-	Select,
-	Intel,
-	Launch,
-	Aftermath,
-	Reset
+	MAIN,
+	SELECT,
+	INTEL,
+	LAUNCH,
+	AFTERMATH,
+	RESET
 };
 
 enum WarHead { EXPLOSIVE, NUCLEAR, SAFETY };
@@ -49,7 +50,7 @@ struct Game {
 		std::cout << std::endl;
 		system("pause"); 
 
-		currScr = Main;
+		currScr = MAIN;
 		while (!gameOver)
 		{
 			update();
@@ -83,13 +84,13 @@ struct Game {
 		switch (choice)
 		{
 		case 1:
-			currScr = Select;
+			currScr = SELECT;
 			break;
 		case 2:
-			currScr = Intel;
+			currScr = INTEL;
 			break;
 		case 3:
-			currScr = Launch;
+			currScr = LAUNCH;
 			break;
 		case 4:
 			gameOver = true;
@@ -126,7 +127,7 @@ struct Game {
 		isArmed = true;
 		std::cout << std::endl;
 		system("pause");
-		currScr = Main;
+		currScr = MAIN;
 	}
 	void intelScr()
 	{
@@ -162,7 +163,7 @@ struct Game {
 		}
 		std::cout << std::endl;
 		system("pause");
-		currScr = Main;
+		currScr = MAIN;
 	}
 	void launchScr()
 	{
@@ -179,18 +180,18 @@ struct Game {
 				}
 				std::cout << std::endl << "Launching Missile!" << std::endl;
 				launched = true;
-				currScr = Aftermath;
+				currScr = AFTERMATH;
 			}
 			else
 			{
 				std::cout << "Please select, and arm, a War Head first" << std::endl;
-				currScr = Main;
+				currScr = MAIN;
 			}
 		}
 		else
 		{
 			std::cout << "Currently attempting to fire blind.. Please aquire valid intel before lauching death tubes.." << std::endl;
-			currScr = Main;
+			currScr = MAIN;
 		}
 		std::cout << std::endl;
 		system("pause");
@@ -206,7 +207,7 @@ struct Game {
 				std::cout << "Direct Hit! And you avoided all civilian casualties, GREAT job!" << std::endl;
 				std::cout << std::endl;
 				system("pause");
-				currScr = Reset;
+				currScr = RESET;
 			}
 			else
 			{
@@ -217,7 +218,7 @@ struct Game {
 				std::cout << "Near Miss! Load up another warhead if you want to try again!" << std::endl;
 				std::cout << std::endl;
 				system("pause"); 
-				currScr = Main;
+				currScr = MAIN;
 			}
 		}
 		else
@@ -232,7 +233,7 @@ struct Game {
 			}
 			std::cout << std::endl;
 			system("pause");
-			currScr = Reset;
+			currScr = RESET;
 		}
 	}
 	void reset()
@@ -250,7 +251,7 @@ struct Game {
 			isArmed = false;
 			launched = false;
 			payload = SAFETY;
-			currScr = Main;
+			currScr = MAIN;
 		}
 		else if (choice == 2)
 		{
@@ -286,27 +287,27 @@ struct Game {
 		{
 			std::cout << "Current Intel Valid for " << intel << " minutes! So act fast!" << std::endl << std::endl;
 		}
-		if (currScr == Main)
+		if (currScr == MAIN)
 		{
 			mainScr();
 		}
-		else if (currScr == Select)
+		else if (currScr == SELECT)
 		{
 			selectScr();
 		}
-		else if (currScr == Intel )
+		else if (currScr == INTEL )
 		{
 			intelScr();
 		}
-		else if (currScr == Launch )
+		else if (currScr == LAUNCH )
 		{
 			launchScr();
 		}
-		else if (currScr == Aftermath)
+		else if (currScr == AFTERMATH)
 		{
 			afterScr();
 		}
-		else if (currScr == Reset)
+		else if (currScr == RESET)
 		{
 			reset();
 		}
