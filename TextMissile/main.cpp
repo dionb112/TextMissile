@@ -102,8 +102,8 @@ struct Game {
 	void mainScr()
 	{
 		std::cout << "1. Select War Head" << std::endl;
-		std::cout << "2. Acquire Target" << std::endl;
-		std::cout << "3. Launch Missile" << std::endl;
+		std::cout << "2. Acquire Target / Check Intel" << std::endl;
+		std::cout << "3. Prepare for Launch" << std::endl;
 		std::cout << "4. Quit" << std::endl;
 		userInput();
 		switch (choice)
@@ -164,26 +164,14 @@ struct Game {
 		else
 		{
 			std::cout << "New Intel incoming";
-			for (int i = 0; i < 3; i++)
-			{
-				Sleep(1000);
-				std::cout << ".";
-				Sleep(250);
-			}
+			dotDotDot();
 
 			missile.target.coordinates.setTarget();
 			std::cout << "\nHostiles discovered at gps coordinates: ";
 			missile.target.coordinates.print();
 			Sleep(250);
 			std::cout << "Locking on now";
-			for (int i = 0; i < 3; i++)
-			{
-				Sleep(1000);
-				std::cout << ".";
-				Sleep(250);
-			}
-
-
+			dotDotDot();
 			std::cout << std::endl << "Target locked on." << std::endl;
 			Sleep(500);
 			civDistance = rand() % 400 + 1;
@@ -203,15 +191,32 @@ struct Game {
 			{
 				std::cout << "Please enter Launch Code: ";
 				userInput();
-				for (int i = 0; i < 4; i++)
+				std::cout << std::endl << "Close enough, I guess...Arming missile now!";
+				dotDotDot();
+				std::cout << std::endl << "\nMissile armed and ready for Launch sir!\n";
+				std::cout << "1. Launch already!!!" << std::endl;
+				std::cout << "2. Abort!!!" << std::endl;
+				userInput();
+				switch (choice)
 				{
-					Sleep(1000);
-					std::cout << "*";
-					Sleep(250);
+				case 1:
+					dotDotDot();
+					std::cout << "Missile Launched!" << std::endl; 
+					launched = true;
+					currScr = AFTERMATH;					
+					break;
+				case 2:
+					dotDotDot();
+					std::cout << "Launch aborted" << std::endl;
+					currScr = MAIN;					
+					break;
+				default:
+					std::cout << "You have two choices.. choose one!" << std::endl;
+					std::cout << std::endl;
+					system("pause");
+					break;
 				}
-				std::cout << std::endl << "Launching Missile!" << std::endl;
-				launched = true;
-				currScr = AFTERMATH;
+
 			}
 			else
 			{
@@ -221,7 +226,7 @@ struct Game {
 		}
 		else
 		{
-			std::cout << "Currently attempting to fire blind.. Please aquire valid intel before lauching death tubes.." << std::endl;
+			std::cout << "Currently attempting to fire blind..\n Please aquire valid intel before lauching death tubes.." << std::endl;
 			currScr = MAIN;
 		}
 		std::cout << std::endl;
@@ -341,6 +346,15 @@ struct Game {
 		else if (currScr == RESET)
 		{
 			reset();
+		}
+	}
+	void dotDotDot()
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			Sleep(1000);
+			std::cout << ".";
+			Sleep(250);
 		}
 	}
 };
