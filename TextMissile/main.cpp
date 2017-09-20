@@ -136,11 +136,11 @@ struct Game {
 		switch (choice)
 		{
 		case 1:
-			std::cout << "You have armed the Explosive warhead!" << std::endl;
+			std::cout << "You have prepared the Explosive warhead!" << std::endl;
 			payload = EXPLOSIVE;
 			break;
 		case 2:
-			std::cout << "You have armed the Nuclear warhead!" << std::endl;
+			std::cout << "You have prepared the Nuclear warhead!" << std::endl;
 			payload = NUCLEAR;
 			break;
 		default:
@@ -201,7 +201,8 @@ struct Game {
 		{
 			if (isArmed)
 			{
-				std::cout << "Launch Code: ";
+				std::cout << "Please enter Launch Code: ";
+				userInput();
 				for (int i = 0; i < 4; i++)
 				{
 					Sleep(1000);
