@@ -4,7 +4,7 @@
 /// Missile Text Based Game
 /// Select warhead, Acquire target, Launch code, Arm Missile, Collison ? Valid ? 
 /// Known Bugs: Need to learn about threading so I can keep the clock updating while system is paused.
-/// Time taken: Average 5 - 20 hours ?
+/// Time taken: Average 20 hours ?
 /// </summary>
 #include <iostream>
 #include <Windows.h>
@@ -56,7 +56,7 @@ struct Game {
 	int intel = 5;
 	int counter = 0;
 	int civDistance = 0;
-	int launchCode = 0000;
+	std::string launchCode = "0000";
 	bool intelValid = false;
 	bool gameOver = false;
 	bool isArmed = false;
@@ -173,6 +173,9 @@ struct Game {
 			std::cout << "Locking on now";
 			dotDotDot();
 			std::cout << std::endl << "Target locked on." << std::endl;
+			std::cout << "By the way Mr. President, the launch code has been changed.. against the better judgement of all the experts to";
+			dotDotDot();
+			std::cout << "\n'0000'" << std::endl;
 			Sleep(500);
 			civDistance = rand() % 400 + 1;
 			std::cout << std::endl << "Be aware! Civilians within " << civDistance << "km of target." << std::endl;
@@ -185,38 +188,42 @@ struct Game {
 	}
 	void launchScr()
 	{
+		std::string launch;
 		if (intelValid)
 		{
 			if (isArmed)
 			{
-				std::cout << "Please enter Launch Code: ";
-				userInput();
-				std::cout << std::endl << "Close enough, I guess...Arming missile now!";
-				dotDotDot();
-				std::cout << std::endl << "\nMissile armed and ready for Launch sir!\n";
-				std::cout << "1. Launch already!!!" << std::endl;
-				std::cout << "2. Abort!!!" << std::endl;
-				userInput();
-				switch (choice)
+				while (launch != launchCode)
 				{
-				case 1:
-					dotDotDot();
-					std::cout << "Missile Launched!" << std::endl; 
-					launched = true;
-					currScr = AFTERMATH;					
-					break;
-				case 2:
-					dotDotDot();
-					std::cout << "Launch aborted" << std::endl;
-					currScr = MAIN;					
-					break;
-				default:
-					std::cout << "You have two choices.. choose one!" << std::endl;
-					std::cout << std::endl;
-					system("pause");
-					break;
-				}
 
+					std::cout << "Please enter correct Launch Code: ";
+					std::getline(std::cin, launch);
+				}
+					std::cout << std::endl << "Close enough.. Arming missile now!";
+					dotDotDot();
+					std::cout << std::endl << "\nMissile armed and ready for Launch sir!\n";
+					std::cout << "1. Launch already!!!" << std::endl;
+					std::cout << "2. Abort!!!" << std::endl;
+					userInput();
+					switch (choice)
+					{
+					case 1:
+						dotDotDot();
+						std::cout << "Missile Launched!" << std::endl;
+						launched = true;
+						currScr = AFTERMATH;
+						break;
+					case 2:
+						dotDotDot();
+						std::cout << "Launch aborted" << std::endl;
+						currScr = MAIN;
+						break;
+					default:
+						std::cout << "You have two choices.. choose one!" << std::endl;
+						std::cout << std::endl;
+						system("pause");
+						break;
+					}
 			}
 			else
 			{
