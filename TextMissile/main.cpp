@@ -52,11 +52,11 @@ struct Game {
 	Screen currScr;
 	Missile missile;
 	std::string input;
+	std::string launchCode = "0000";
 	int choice = 0;
 	int intel = 5;
 	int counter = 0;
 	int civDistance = 0;
-	std::string launchCode = "0000";
 	bool intelValid = false;
 	bool gameOver = false;
 	bool isArmed = false;
@@ -173,7 +173,7 @@ struct Game {
 			std::cout << "Locking on now";
 			dotDotDot();
 			std::cout << std::endl << "Target locked on." << std::endl;
-			std::cout << "By the way Mr. President, the launch code has been changed.. against the better judgement of all the experts to";
+			std::cout << "By the way Mr. President, the launch code has been changed.. against the better judgement of all our experts.. to: ";
 			dotDotDot();
 			std::cout << "\n'0000'" << std::endl;
 			Sleep(500);
@@ -196,10 +196,17 @@ struct Game {
 				while (launch != launchCode)
 				{
 
-					std::cout << "Please enter correct Launch Code: ";
+					std::cout << "Please enter Launch Code now [or enter 1 to go back(where you can check Intel)]: ";
 					std::getline(std::cin, launch);
+					if (launch == "1")
+					{
+						currScr = MAIN;
+						break;
+					}
 				}
-					std::cout << std::endl << "Close enough.. Arming missile now!";
+				if (launch == launchCode)
+				{
+					std::cout << std::endl << "Arming missile now!";
 					dotDotDot();
 					std::cout << std::endl << "\nMissile armed and ready for Launch sir!\n";
 					std::cout << "1. Launch already!!!" << std::endl;
@@ -224,6 +231,7 @@ struct Game {
 						system("pause");
 						break;
 					}
+				}		
 			}
 			else
 			{
