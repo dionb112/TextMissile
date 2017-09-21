@@ -1,4 +1,4 @@
 ﻿  main.cpp
-c:\projects\textmissile\textmissile\main.cpp(378): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-  TextMissile.vcxproj -> C:\projects\TextMissile\x64\Debug\TextMissile.exe
-  TextMissile.vcxproj -> C:\projects\TextMissile\x64\Debug\TextMissile.pdb (Partial PDB)
+c:\textmissile\textmissile\main.cpp(440): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+  TextMissile.vcxproj -> C:\TextMissile\x64\Debug\TextMissile.exe
+  TextMissile.vcxproj -> C:\TextMissile\x64\Debug\TextMissile.pdb (Partial PDB)
